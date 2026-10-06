@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h2 class="section-title">Checkout</h2>
+
+    <!-- ================= CART ITEMS (filled by JavaScript) ================= -->
+    <div id="cart-items" class="cart-items">
+        <!-- JavaScript will show cart items here -->
+    </div>
+
+    <!-- ================= CHECKOUT FORM ================= -->
+    <!-- The form sends cart data + customer details to the /checkout route (POST) -->
+    <form id="checkout-form" action="{{ url_for('checkout') }}" method="post" class="checkout-form">
+
+        <!-- This hidden field will hold the cart as a JSON string -->
+        <input type="hidden" name="cart" id="cart-hidden" value="[]">
+        <input type="hidden" name="total" id="total-hidden" value="0">
+
+        <h3>Customer Details</h3>
+        <label>Full Name</label>
+        <input type="text" name="customer_name" required placeholder="Enter your name">
+
+        <label>Email</label>
+        <input type="email" name="email" required placeholder="Enter your email">
+
+        <label>Delivery Address</label>
+        <textarea name="address" required placeholder="Enter your delivery address"></textarea>
+
+        <div class="checkout-total">
+            <h3>Total: Rs. <span id="checkout-total">0.00</span></h3>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Place Order</button>
+    </form>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // This function runs when the checkout page loads.
+    // It reads the cart from localStorage and shows each item.
+    document.addEventListener("DOMContentLoaded", function () {
+        var cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        var cartBox = document.getElementById("cart-items");
+        var total = 0;
+
+        if (cart.length === 0) {
+            cartBox.innerHTML = "<p class='empty'>Your cart is empty. Go to the shop to add products.</p>";
+            return;
+        }
+
+        var html = "<table class='cart-table'><tr><th>Product</th><th>Price</th><th>Qty</th><th>Subtotal</th><th>Action</th></tr>";
+
+        for (var i = 0; i < cart.length; i++) {
+            var item = cart[i];
+            var subtotal = item.price * item.quantity;
+            total += subtotal;
+
+            html += "<tr>";
+            html += "<td>" + item.name + "</td>";
+            html += "<td>Rs. " + item.price.toFixed(2) + "</td>";
+            html += "<td>" + item.quantity + "</td>";
+            html += "<td>Rs. " + subtotal.toFixed(2) + "</td>";
+            html += "<td><button class='btn btn-remove' onclick='removeItem(" + i + ")'>Remove</button></td>";
+            html += "</tr>";
+        }
+
+        html += "</table>";
+        cartBox.innerHTML = html;
+
+        // Put the total and cart data into hidden fields so they get sent with the form
+        document.getElementById("checkout-total").innerText = total.toFixed(2);
+        document.getElementById("total-hidden").value = total;
+        document.getElementById("cart-hidden").value = JSON.stringify(cart);
+    });
+
+    // Remove one item from the cart and reload the page
+    function removeItem(index) {
+        var cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        cart.splice(index, 1);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+        location.reload();
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h2 class="section-title">
+        {% if action == "add" %}
+            Add New Product
+        {% else %}
+            Edit Product
+        {% endif %}
+    </h2>
+
+    <!-- ================= PRODUCT FORM ================= -->
+    <!-- This form is used for both adding and editing a product -->
+    <form action="
+        {% if action == 'add' %}
+            {{ url_for('admin_add') }}
+        {% else %}
+            {{ url_for('admin_edit', product_id=product.id) }}
+        {% endif %}
+    " method="post" class="admin-form">
+
+        <label>Product Name</label>
+        <input type="text" name="name" required
+               value="{{ product.name if product else '' }}">
+
+        <label>Category</label>
+        <input type="text" name="category" required
+               value="{{ product.category if product else '' }}">
+
+        <label>Price (Rs.)</label>
+        <input type="number" name="price" step="0.01" min="0" required
+               value="{{ product.price if product else '' }}">
+
+        <label>Description</label>
+        <textarea name="description" required>{{ product.description if product else '' }}</textarea>
+
+        <label>Image URL</label>
+        <input type="text" name="image" required
+               value="{{ product.image if product else '' }}">
+
+        <button type="submit" class="btn btn-primary">
+            {% if action == "add" %}
+                Add Product
+            {% else %}
+                Update Product
+            {% endif %}
+        </button>
+
+        <a href="{{ url_for('admin') }}" class="btn btn-cancel">Cancel</a>
+    </form>
+
+</div>
+{% endblock %}

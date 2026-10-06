@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <!-- ================= PRODUCT DETAILS ================= -->
+    <div class="product-detail">
+        <div class="detail-image">
+            <img src="{{ product.image }}" alt="{{ product.name }}">
+        </div>
+        <div class="detail-info">
+            <span class="product-category">{{ product.category }}</span>
+            <h1>{{ product.name }}</h1>
+            <p class="price-large">Rs. {{ "%.2f"|format(product.price) }}</p>
+            <p class="description">{{ product.description }}</p>
+
+            <!-- Quantity selector + Add to Cart button -->
+            <div class="detail-actions">
+                <input type="number" id="quantity" value="1" min="1" class="qty-input">
+                <button class="btn btn-primary" onclick="addToCartWithQty({{ product.id }}, '{{ product.name }}', {{ product.price }}, '{{ product.image }}')">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= RELATED PRODUCTS ================= -->
+    {% if related|length > 0 %}
+    <h2 class="section-title">Related Products</h2>
+    <div class="product-grid">
+        {% for product in related %}
+        <div class="product-card">
+            <a href="{{ url_for('product_detail', product_id=product.id) }}">
+                <img src="{{ product.image }}" alt="{{ product.name }}" class="product-img">
+            </a>
+            <div class="product-info">
+                <span class="product-category">{{ product.category }}</span>
+                <h3>{{ product.name }}</h3>
+                <p class="price">Rs. {{ "%.2f"|format(product.price) }}</p>
+                <button class="btn btn-add" onclick="addToCart({{ product.id }}, '{{ product.name }}', {{ product.price }}, '{{ product.image }}')">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // addToCartWithQty reads the quantity box and adds that many to the cart
+    function addToCartWithQty(id, name, price, image) {
+        var qty = parseInt(document.getElementById("quantity").value);
+        if (qty < 1) qty = 1;
+        addToCart(id, name, price, image, qty);
+    }
+</script>
+{% endblock %}

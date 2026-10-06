@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <!-- ================= ORDER SUCCESS MESSAGE ================= -->
+    <div class="success-box">
+        <h1>Order Placed Successfully!</h1>
+        <p>Thank you, <strong>{{ customer_name }}</strong>. Your order has been received.</p>
+        <p>Order ID: <strong>#{{ order_id }}</strong></p>
+        <p>Total Amount: <strong>Rs. {{ "%.2f"|format(total) }}</strong></p>
+
+        <!-- Clear the cart from the browser after a successful order -->
+        <button class="btn btn-primary" onclick="clearCart()">Continue Shopping</button>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // After a successful order, clear the cart from localStorage
+    document.addEventListener("DOMContentLoaded", function () {
+        localStorage.removeItem("cart");
+        updateCartCount();
+    });
+
+    function clearCart() {
+        window.location.href = "{{ url_for('shop') }}";
+    }
+</script>
+{% endblock %}

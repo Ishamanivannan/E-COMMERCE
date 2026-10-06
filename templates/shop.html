@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <!-- ================= PAGE TITLE ================= -->
+    <h2 class="section-title">All Products</h2>
+
+    <div class="shop-layout">
+
+        <!-- ================= SIDEBAR: SEARCH + CATEGORIES ================= -->
+        <aside class="sidebar">
+            <!-- Search form. The input is sent to the same /shop route as ?search=... -->
+            <form action="{{ url_for('shop') }}" method="get" class="search-form">
+                <input type="text" name="search" placeholder="Search products..." value="{{ search }}" class="search-input">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+
+            <!-- Category filter list -->
+            <h3>Categories</h3>
+            <ul class="category-list">
+                <li><a href="{{ url_for('shop') }}">All</a></li>
+                {% for cat in categories %}
+                <li><a href="{{ url_for('shop', category=cat.category) }}">{{ cat.category }}</a></li>
+                {% endfor %}
+            </ul>
+        </aside>
+
+        <!-- ================= PRODUCT GRID ================= -->
+        <div class="product-content">
+            {% if products|length == 0 %}
+                <p class="empty">No products found.</p>
+            {% else %}
+            <div class="product-grid">
+                {% for product in products %}
+                <div class="product-card">
+                    <a href="{{ url_for('product_detail', product_id=product.id) }}">
+                        <img src="{{ product.image }}" alt="{{ product.name }}" class="product-img">
+                    </a>
+                    <div class="product-info">
+                        <span class="product-category">{{ product.category }}</span>
+                        <h3>{{ product.name }}</h3>
+                        <p class="price">Rs. {{ "%.2f"|format(product.price) }}</p>
+                        <button class="btn btn-add" onclick="addToCart({{ product.id }}, '{{ product.name }}', {{ product.price }}, '{{ product.image }}')">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}
